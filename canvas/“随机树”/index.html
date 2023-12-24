@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>随机树</title>
+    <style>
+        body {
+            height: 100vh;
+            background-color: lightgray;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        canvas {
+            border: 1px solid gray;
+        }
+        button {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <button>重新生成</button>
+
+    <script>
+        const canvas = document.querySelector('canvas');
+        const button = document.querySelector('button');
+        const width = innerWidth - 200, height = innerHeight - 200;
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext('2d');
+        context.translate(width / 2, height);
+        context.scale(1, -1);
+
+        const factor = 0.8;
+        const drawBranch = (x, y, length, angle, width) => {
+            if (width < 15 && Math.random() < 0.2) {
+                return;
+            }
+            if (width < 2) {
+                if (Math.random() < 0.8) {
+                    drawFlower(x, y, 4);
+                }
+                return;
+            }
+            const endX = x + Math.cos(angle) * length;
+            const endY = y + Math.sin(angle) * length;
+            context.beginPath();
+            context.moveTo(x, y);
+            context.lineTo(endX, endY);
+            context.strokeStyle = 'gray';
+            context.lineWidth = width;
+            context.lineCap = 'round';
+            context.stroke();
+            drawBranch(
+                endX,
+                endY,
+                length * factor,
+                angle + Math.random() * (30 / 180 * Math.PI),
+                width * factor
+            );
+            drawBranch(
+                endX,
+                endY,
+                length * factor,
+                angle - Math.random() * (30 / 180 * Math.PI),
+                width * factor
+            );
+        };
+        const drawFlower = (x, y, radius) => {
+            context.beginPath();
+            context.arc(x, y, radius, 0, Math.PI * 2);
+            context.fillStyle = 'white';
+            context.fill();
+        };
+
+        drawBranch(0, 0, 80, Math.PI / 2, 30);
+        button.addEventListener('click', () => {
+            context.clearRect(-width / 2, 0, width, height);
+            drawBranch(0, 0, 80, Math.PI / 2, 30);
+        });
+    </script>
+</body>
+</html>
